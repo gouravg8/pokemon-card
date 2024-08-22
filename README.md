@@ -2,6 +2,11 @@
 
 This is the visually appealing Pokemon Card that I created using React.js.
 
+Example:
+![image](https://github.com/user-attachments/assets/39911ae9-4d92-459b-935a-0bab7f9cf0f9)
+
+
+
 ## Setup
 
 1. Clone the repository:
