@@ -1,69 +1,100 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef} from "react";
 import { PokemonList, PokemonData } from "../utils/getPokeData";
 import Card from "./Card";
 import { Pokemon } from "pokeapi-js-wrapper";
+// gsap for animation
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+
+gsap.registerPlugin(useGSAP);
+
 const Home = () => {
-  const [pokemonList, setPokemonList] = useState<any[]>([]);
+  const [pokemonList, setPokemonList] = useState<{name:string, url:string}[]>([]);
   const [pokemonData, setPokemonData] = useState<any[]>([]);
+  const [showData, setShowData] = useState<any[]>([]);
+  const [showFilteredData, setShowFilteredData] = useState<any[]>([]);
   const [input, setInput] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const isLocalStorageFilled = localStorage.getItem("pokemonData");
+  const [isLoading, setIsLoading] = useState<boolean>();
+  // const [pokemonDataArr, setPokemonDataArr] = useState<Pokemon[]>([]);
+  const [isLocalStorageFilled, setIsLocalStorageFilled] = useState<boolean>(false);
 
-  const pokemonDataArr: Pokemon[] = [];
+  const container = useRef();
 
-  const getPokemonList = async () => {
-    const response = await PokemonList();
-    setPokemonList(response.results);
-  };
-
-  const getPokemonData = async (name: string) => {
-    const response = await PokemonData(name);
-    setPokemonData((prev) => [...prev, response]);
-    return response;
-  };
   useEffect(() => {
+    let localLocalData = JSON.parse(localStorage.getItem("pokeData"));
+    console.log("is storage filled with data", localLocalData != null);
+    
     setIsLoading(true);
+    
     async function fetchData() {
-      if (!isLocalStorageFilled) {
-        getPokemonList();
-        for (let i = 0; i < pokemonList.length; i++) {
-          const pokeData = getPokemonData(pokemonList[i].name);
-          pokemonDataArr.push(await pokeData);
+      // console.log("inside fetchData");
+     if(localLocalData == null){
+        const localList = await PokemonList();
+
+        const fetchPokemonData = async ()=>{
+          const promise = localList.results.map(async pokemon=>{
+              const tempItem = await PokemonData(pokemon.name);
+             return tempItem;
+           })
+          
+          const result = await Promise.all(promise);
+          localStorage.setItem("pokeData", JSON.stringify(result));
+
+          // get the data from localStorage
+          localLocalData = JSON.parse(localStorage.getItem("pokeData"));
+          setShowData(localLocalData);
+          console.log("aa gya data", localLocalData);
+         window.location.reload(); 
         }
-        localStorage.setItem("pokemonData", JSON.stringify(pokemonDataArr));
+        fetchPokemonData();
         setIsLoading(false);
-      } else {
-        const storedData = localStorage.getItem("pokemonData");
-        if (storedData) {
-          const parsedData = JSON.parse(storedData);
-          setPokemonData(parsedData);
-        }
-        setIsLoading(false);
-      }
+      } 
     }
+
     fetchData();
-  }, []);
+
+     // if localStorage is filled get the data
+     setShowData(localLocalData);
+    setShowFilteredData(localLocalData);
+      // console.log("localto page", localLocalData, "filterd data", showFilteredData);
+    
+     setIsLoading(false);
+
+    return () => {
+      setPokemonList([]);
+      setPokemonData([]);
+      setShowData([]);
+      // setPokemonDataArr([]);
+    }
+  }, [])
+
+  //   console.log("fetch after feth", pokemonDataArr.length == 20);
+  // if(pokemonDataArr.length == 20){
+  //   localStorage.setItem("pokeData", JSON.stringify(pokemonDataArr));
+  // }
+
+    // console.log("last fetched", pokemonDataArr);
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
+    // e.preventDefault();
+    let newValue = e.target.value;
+    setInput(newValue);
 
-    if (localStorage.getItem("pokemonData")) {
-      const storedData = localStorage.getItem("pokemonData");
-      if (storedData) {
-        const parsedData = JSON.parse(storedData) as Pokemon[];
-        setPokemonData(
-          parsedData.filter((pokemon) => pokemon.name.includes(input))
-        );
-      }
-    }
+    setIsLoading(true);
+    setTimeout(() => {
+       setShowFilteredData(showData.filter(item => item.name.includes(newValue.toLowerCase()))); 
+        setIsLoading(false);
+    }, 900);
+    // setShowFilteredData(showData.filter(item => item.name.includes(newValue.toLowerCase()))); 
+     // console.log("filtered", showFilteredData);
+     // console.log("show data", showData, input);
+   
+    // setShowFilteredData(JSON.parse(localStorage.getItem("pokeData")).filter(item => item.name.includes(input.toLowerCase()))); 
+    // clearTimeout(timer);
+  }
 
-    if (input == "" || !input) {
-      setPokemonData(pokemonData);
-    }
-    console.log(input);
-  };
-
-  if (isLoading) return <>Loading...</>;
+   // if (isLoading) return <div className="">Loading...</div>;
   return (
     <>
       <input
@@ -76,11 +107,12 @@ const Home = () => {
         onChange={handleChange}
       />
 
-      <div className="flex flex-wrap gap-4 justify-center items-center my-4">
-        {pokemonData.map((pokemon) => {
+      <div ref={container} className="flex flex-wrap gap-4 justify-center items-center my-4">
+        {isLoading || !showFilteredData ? <h1 className="text-2xl p-4 font-semibold">Loading...</h1> :
+        showFilteredData.map((pokemon) => {
           return (
             <div key={pokemon.name}>
-              <Card
+              {<Card
                 name={pokemon.name}
                 hp={pokemon.stats[0].base_stat}
                 spAttack={pokemon.stats[1].base_stat}
@@ -88,7 +120,7 @@ const Home = () => {
                 spSpeed={pokemon.stats[3].base_stat}
                 image={pokemon.sprites.other.dream_world.front_default}
                 id={pokemon.id}
-              />
+              /> }
             </div>
           );
         })}
