@@ -1,12 +1,8 @@
 import { useEffect, useState, useRef} from "react";
 import { PokemonList, PokemonData } from "../utils/getPokeData";
+import useDebounce from '../utils/useDebounce'
 import Card from "./Card";
 import { Pokemon } from "pokeapi-js-wrapper";
-// gsap for animation
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
-
-gsap.registerPlugin(useGSAP);
 
 const Home = () => {
   const [pokemonList, setPokemonList] = useState<{name:string, url:string}[]>([]);
@@ -18,7 +14,8 @@ const Home = () => {
   // const [pokemonDataArr, setPokemonDataArr] = useState<Pokemon[]>([]);
   const [isLocalStorageFilled, setIsLocalStorageFilled] = useState<boolean>(false);
 
-  const container = useRef();
+
+const container = useRef(null);
 
   useEffect(() => {
     let localLocalData = JSON.parse(localStorage.getItem("pokeData"));
@@ -66,52 +63,41 @@ const Home = () => {
       setShowData([]);
       // setPokemonDataArr([]);
     }
-  }, [])
-
-  //   console.log("fetch after feth", pokemonDataArr.length == 20);
-  // if(pokemonDataArr.length == 20){
-  //   localStorage.setItem("pokeData", JSON.stringify(pokemonDataArr));
-  // }
+   }, [])
 
     // console.log("last fetched", pokemonDataArr);
-  
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // e.preventDefault();
+
     let newValue = e.target.value;
-    setInput(newValue);
+    setInput(e.target.value);
 
-    setIsLoading(true);
+    // console.log("hi from change input","targated val" +  e.target.value);
     setTimeout(() => {
-       setShowFilteredData(showData.filter(item => item.name.includes(newValue.toLowerCase()))); 
-        setIsLoading(false);
-    }, 900);
-    // setShowFilteredData(showData.filter(item => item.name.includes(newValue.toLowerCase()))); 
-     // console.log("filtered", showFilteredData);
-     // console.log("show data", showData, input);
-   
-    // setShowFilteredData(JSON.parse(localStorage.getItem("pokeData")).filter(item => item.name.includes(input.toLowerCase()))); 
-    // clearTimeout(timer);
-  }
-
-   // if (isLoading) return <div className="">Loading...</div>;
+      setIsLoading(false);
+      setShowFilteredData(showData.filter(item => item.name.includes(newValue.toLowerCase()))); 
+    }, 300);
+    setIsLoading(true);
+ }
+  // const handleChange = useDebounce(e: React.ChangeEvent<HTMLInputElement> =>{
+  //
+  // }, 400); 
   return (
-    <>
+    <div className={""}>
       <input
         type="text"
         name="search"
         id=""
         placeholder="Search Pokemon"
-        className="flex justify-center w-3/4 md:w-1/2 mx-auto border-2 border-gray-400 rounded-md p-2 my-4"
+        className="flex justify-center w-3/4 font-medium md:w-1/3 mx-auto border-2 border-gray-400 rounded-xl p-3 my-4 focus:outline-none text-black"
         value={input}
         onChange={handleChange}
       />
-
-      <div ref={container} className="flex flex-wrap gap-4 justify-center items-center my-4">
+      <div ref={container} className="flex flex-wrap gap-6 justify-center items-center my-4 text-white">
         {isLoading || !showFilteredData ? <h1 className="text-2xl p-4 font-semibold">Loading...</h1> :
         showFilteredData.map((pokemon) => {
           return (
-            <div key={pokemon.name}>
+            <div className={"rounded-md card bg-[#ffffff1a]"} key={pokemon.name}>
               {<Card
                 name={pokemon.name}
                 hp={pokemon.stats[0].base_stat}
@@ -125,7 +111,7 @@ const Home = () => {
           );
         })}
       </div>
-    </>
+    </div>
   );
 };
 
