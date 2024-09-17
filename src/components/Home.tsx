@@ -11,14 +11,14 @@ const Home = () => {
 	const [isLoading, setIsLoading] = useState<boolean>();
 
 	useEffect(() => {
-		let localLocalData = JSON.parse(localStorage.getItem("pokeData") || "");
+		let localLocalData = JSON.parse(localStorage.getItem("pokeData") || "[]");
 		console.log("is storage filled with data", localLocalData != null);
 
 		setIsLoading(true);
 
 		async function fetchData() {
 			// console.log("inside fetchData");
-			if (localLocalData == null || localLocalData === "") {
+			if (localLocalData == null || localLocalData.length < 1) {
 				const localList = await PokemonList();
 
 				const fetchPokemonData = async () => {
@@ -31,9 +31,8 @@ const Home = () => {
 					localStorage.setItem("pokeData", JSON.stringify(result));
 
 					// get the data from localStorage
-					localLocalData = JSON.parse(localStorage.getItem("pokeData") || "");
+					localLocalData = JSON.parse(localStorage.getItem("pokeData") || "[]");
 					setShowData(localLocalData);
-					console.log("aa gya data", localLocalData);
 					window.location.reload();
 				};
 				fetchPokemonData();
@@ -76,7 +75,7 @@ const Home = () => {
 				onChange={handleChange}
 			/>
 			<div className="flex flex-wrap gap-6 justify-center items-center my-4 text-white">
-				{isLoading || !showFilteredData ? (
+				{isLoading || showFilteredData.length < 1 ? (
 					<h1 className="text-2xl p-4 font-semibold">Loading...</h1>
 				) : (
 					showFilteredData.map((pokemon) => {
