@@ -70,7 +70,7 @@ const Home = () => {
 				name="search"
 				id=""
 				placeholder="Search Pokemon"
-				className="flex justify-center w-3/4 font-medium md:w-1/3 mx-auto border-2 border-gray-400 rounded-xl p-3 mt-4 mb-8 focus:outline-none text-black "
+				className="flex justify-center w-3/4 font-base md:font-medium md:w-1/3 mx-auto border-2 border-gray-400 rounded-xl px-3 py-2 md:p-3 mt-4 mb-8 focus:outline-none text-black "
 				value={input}
 				onChange={handleChange}
 			/>
@@ -81,7 +81,7 @@ const Home = () => {
 					showFilteredData.map((pokemon) => {
 						return (
 							<div
-								className={"rounded-md card bg-[#ffffff1a]"}
+								className={"w-11/12 md:w-fit rounded-md card bg-[#ffffff1a]"}
 								key={pokemon.name}
 							>
 								{

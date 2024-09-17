@@ -17,7 +17,7 @@ const Card = ({
 	id,
 }: CardProps) => {
 	return (
-		<div className=" w-full flex flex-col justify-center items-center gap-4 rounded-lg py-4 px-8 hover:transform hover:scale-105 duration-300 hover:cursor-pointer">
+		<div className="w-full flex flex-col justify-center items-center gap-4 rounded-lg py-6 px-8 hover:transform hover:scale-105 duration-300 hover:cursor-pointer">
 			<div className="flex justify-between items-center w-full border-b-2 pb-2">
 				<h1 className="text-2xl">#{id}</h1>
 				<h1 className="text-xl">HP {hp}</h1>
