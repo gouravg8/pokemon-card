@@ -70,7 +70,7 @@ const Home = () => {
 				name="search"
 				id=""
 				placeholder="Search Pokemon"
-				className="flex justify-center w-3/4 font-medium md:w-1/3 mx-auto border-2 border-gray-400 rounded-xl p-3 my-4 focus:outline-none text-black"
+				className="flex justify-center w-3/4 font-medium md:w-1/3 mx-auto border-2 border-gray-400 rounded-xl p-3 mt-4 mb-8 focus:outline-none text-black "
 				value={input}
 				onChange={handleChange}
 			/>
