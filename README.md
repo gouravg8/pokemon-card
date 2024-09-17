@@ -1,32 +1,37 @@
 # Pokemon Card
 
-This is the visually appealing Pokemon Card that I created using React.js.
+These are the visually appealing Pokemon Cards that I've created using React.js and PokemonAPI.
 
 Example:
-![image](https://github.com/user-attachments/assets/39911ae9-4d92-459b-935a-0bab7f9cf0f9)
+![image](https://github.com/user-attachments/assets/f6e6e0b0-5059-4ad9-9776-ec7bc403e9f2)
 
 
 
 ## Setup
 
-1. Clone the repository:
+1. Prerequisite(pnpm)
+   ```bash
+   npm i -g pnpm
+   ```
+
+2. Clone the repository:
 
    ```bash
    git clone https://github.com/gouravg8/pokemon-card.git
    ```
 
-2. Navigate to the project directory:
+3. Navigate to the project directory:
 
-```bash
-cd pokemon-card
-```
+   ```bash
+   cd pokemon-card
+   ```
 
-3. Install the dependencies:
+4. Install the dependencies:
 
-```bash
-npm install
-```
-4. Start the development server:
-```bash
-npm run dev
-```
+   ```bash
+   pnpm install
+   ```
+5. Start the development server:
+   ```bash
+   pnpm run dev
+   ```
