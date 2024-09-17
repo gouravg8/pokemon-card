@@ -1,31 +1,25 @@
-import { useEffect, useState, useRef} from "react";
+import { useEffect, useState} from "react";
 import { PokemonList, PokemonData } from "../utils/getPokeData";
-import useDebounce from '../utils/useDebounce'
 import Card from "./Card";
-import { Pokemon } from "pokeapi-js-wrapper";
 
 const Home = () => {
-  const [pokemonList, setPokemonList] = useState<{name:string, url:string}[]>([]);
-  const [pokemonData, setPokemonData] = useState<any[]>([]);
-  const [showData, setShowData] = useState<any[]>([]);
+   // biome-ignore lint/suspicious/noExplicitAny: <explanation: Data has large amount of fields>
+   const [showData, setShowData] = useState<any[]>([]);
+   // biome-ignore lint/suspicious/noExplicitAny: <explanation: Data has large amount of fields>
   const [showFilteredData, setShowFilteredData] = useState<any[]>([]);
   const [input, setInput] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>();
-  // const [pokemonDataArr, setPokemonDataArr] = useState<Pokemon[]>([]);
-  const [isLocalStorageFilled, setIsLocalStorageFilled] = useState<boolean>(false);
 
-
-const container = useRef(null);
 
   useEffect(() => {
-    let localLocalData = JSON.parse(localStorage.getItem("pokeData"));
+    let localLocalData = JSON.parse(localStorage.getItem("pokeData") || "");
     console.log("is storage filled with data", localLocalData != null);
     
     setIsLoading(true);
     
     async function fetchData() {
       // console.log("inside fetchData");
-     if(localLocalData == null){
+     if(localLocalData == null || localLocalData === ""){
         const localList = await PokemonList();
 
         const fetchPokemonData = async ()=>{
@@ -38,7 +32,7 @@ const container = useRef(null);
           localStorage.setItem("pokeData", JSON.stringify(result));
 
           // get the data from localStorage
-          localLocalData = JSON.parse(localStorage.getItem("pokeData"));
+          localLocalData = JSON.parse(localStorage.getItem("pokeData") || "");
           setShowData(localLocalData);
           console.log("aa gya data", localLocalData);
          window.location.reload(); 
@@ -49,27 +43,17 @@ const container = useRef(null);
     }
 
     fetchData();
-
-     // if localStorage is filled get the data
      setShowData(localLocalData);
     setShowFilteredData(localLocalData);
-      // console.log("localto page", localLocalData, "filterd data", showFilteredData);
-    
      setIsLoading(false);
 
     return () => {
-      setPokemonList([]);
-      setPokemonData([]);
-      setShowData([]);
-      // setPokemonDataArr([]);
+        setShowData([]);
     }
    }, [])
 
-    // console.log("last fetched", pokemonDataArr);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // e.preventDefault();
-
-    let newValue = e.target.value;
+    const newValue = e.target.value;
     setInput(e.target.value);
 
     // console.log("hi from change input","targated val" +  e.target.value);
@@ -79,11 +63,8 @@ const container = useRef(null);
     }, 300);
     setIsLoading(true);
  }
-  // const handleChange = useDebounce(e: React.ChangeEvent<HTMLInputElement> =>{
-  //
-  // }, 400); 
-  return (
-    <div className={""}>
+    return (
+    <>
       <input
         type="text"
         name="search"
@@ -93,7 +74,7 @@ const container = useRef(null);
         value={input}
         onChange={handleChange}
       />
-      <div ref={container} className="flex flex-wrap gap-6 justify-center items-center my-4 text-white">
+      <div className="flex flex-wrap gap-6 justify-center items-center my-4 text-white">
         {isLoading || !showFilteredData ? <h1 className="text-2xl p-4 font-semibold">Loading...</h1> :
         showFilteredData.map((pokemon) => {
           return (
@@ -111,7 +92,7 @@ const container = useRef(null);
           );
         })}
       </div>
-    </div>
+    </>
   );
 };
 
